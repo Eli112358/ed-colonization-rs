@@ -26,7 +26,11 @@ impl Config {
         let base_dirs = BaseDirs::new().unwrap();
         let config_home = base_dirs.config_home();
         let app_config_dir = config_home.join(APP_NAME);
+        fs::create_dir_all(&app_config_dir).unwrap();
         let file = app_config_dir.join("config.json");
+        if !file.exists() {
+            fs::write(&file, "{}").unwrap();
+        }
         let content = fs::read_to_string(&file).unwrap();
         let data = from_str(&content).unwrap();
         Self { file, data, }
