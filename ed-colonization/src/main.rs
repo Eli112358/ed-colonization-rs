@@ -8,6 +8,7 @@ const APP_NAME: &str = "ed-colonization";
 fn main() {
     let mut config = Config::new();
     let journal_location = &config.data.journal_location;
+    println!("[debug] Config file: {}", &config.file.display());
     println!("Journal Location: {}", journal_location);
     println!("Minimum stock: {}", config.data.minimum_stock);
     println!("Tracked:");

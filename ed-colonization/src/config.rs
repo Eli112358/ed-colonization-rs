@@ -17,7 +17,7 @@ pub struct ConfigData {
 
 #[derive(Debug)]
 pub struct Config {
-    file: PathBuf,
+    pub(crate) file: PathBuf,
     pub(crate) data: ConfigData,
 }
 
