@@ -1,50 +1,9 @@
-use cross_xdg::BaseDirs;
-use serde::{Deserialize, Serialize};
-use serde_json::de::from_str;
-use serde_json::to_string_pretty;
-use std::fs;
 use std::io::{stdin, stdout, Write};
-use std::path::PathBuf;
+use config::Config;
+
+mod config;
 
 const APP_NAME: &str = "ed-colonization";
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ConfigData {
-    journal_location: String,
-    minimum_stock: i64,
-    list_all: bool,
-    show_totals: bool,
-    totals_only: bool,
-    tracked_constructions: Vec<i64>,
-}
-
-#[derive(Debug)]
-pub struct Config {
-    file: PathBuf,
-    data: ConfigData,
-}
-
-impl Config {
-    pub(crate) fn new() -> Self {
-        let base_dirs = BaseDirs::new().unwrap();
-        let config_home = base_dirs.config_home();
-        let app_config_dir = config_home.join(APP_NAME);
-        let file = app_config_dir.join("config.json");
-        let content = fs::read_to_string(&file).unwrap();
-        let data = from_str(&content).unwrap();
-        Self { file, data, }
-    }
-
-    pub(crate) fn reload(&mut self) {
-        let content = fs::read_to_string(&self.file).unwrap();
-        self.data = from_str(&content).unwrap();
-    }
-
-    pub(crate) fn save(&self) {
-        let json_data = to_string_pretty(&self.data).unwrap();
-        fs::write(&self.file, json_data).unwrap();
-    }
-}
 
 fn main() {
     let mut config = Config::new();
