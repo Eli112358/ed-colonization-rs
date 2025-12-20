@@ -1,4 +1,3 @@
-use std::io::{stdin, stdout, Write};
 use config::Config;
 
 mod config;
@@ -19,16 +18,10 @@ fn main() {
     println!("List all available: {}", config.data.list_all);
     println!("Show totals: {}", config.data.show_totals);
     println!("Totals Only: {}", config.data.totals_only);
-    loop {
-        // for testing `config.save` and `config.reload`
-        let mut buffer = String::new();
-        let stdin = stdin();
-        print!("Please hit enter to toggle totals only:");
-        let _=stdout().flush();
-        stdin.read_line(&mut buffer).unwrap_or(0);
-        config.data.totals_only = !config.data.totals_only;
-        config.save();
-        config.reload();
-        println!("[debug] Totals only: {}", config.data.totals_only);
-    }
+
+    // for testing `config.save` and `config.reload` and avoid `never used` warnings
+    config.data.totals_only = !config.data.totals_only;
+    config.save();
+    config.reload();
+    println!("[debug] Totals only: {}", config.data.totals_only);
 }
