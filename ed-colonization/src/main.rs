@@ -1,10 +1,20 @@
-use std::fs::read_dir;
+use std::fs::{read_dir, File};
+use std::io::{BufRead, BufReader};
+use std::path::PathBuf;
 use config::Config;
 use regex::Regex;
+use serde::Deserialize;
+use serde_json::from_str;
 
 mod config;
 
 const APP_NAME: &str = "ed-colonization";
+
+#[derive(Debug, Deserialize)]
+struct JournalEntry {
+    timestamp: String,
+    event: String,
+}
 
 fn main() {
     let mut config = Config::new();
@@ -46,4 +56,11 @@ fn main() {
     }
     let latest_journal_file = journal_files.pop().unwrap();
     println!("[debug] Latest Journal file: {}", latest_journal_file);
+    let open_latest_journal = File::open(PathBuf::from(&journal_location).join(&latest_journal_file)).unwrap();
+    let reader = BufReader::new(open_latest_journal);
+    for line in reader.lines() {
+        let entry: JournalEntry = from_str(line.as_ref().unwrap().as_str()).unwrap();
+        println!("[debug] Timestamp: {}; event: {}", entry.timestamp, entry.event);
+        println!("[debug] Line: {}", line.unwrap());
+    }
 }
