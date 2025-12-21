@@ -5,6 +5,7 @@ use config::Config;
 use regex::Regex;
 use serde_json::from_str;
 use events::JournalEntry;
+use crate::events::ColonisationConstructionDepot;
 
 mod config;
 mod events;
@@ -55,7 +56,17 @@ fn main() {
     let reader = BufReader::new(open_latest_journal);
     for line in reader.lines() {
         let entry: JournalEntry = from_str(line.as_ref().unwrap().as_str()).unwrap();
-        println!("[debug] Timestamp: {}; event: {}", entry.timestamp, entry.event);
-        println!("[debug] Line: {}", line.unwrap());
+        if &entry.event == "ColonisationConstructionDepot" {
+            let depot_event: ColonisationConstructionDepot = from_str(line.as_ref().unwrap().as_str()).unwrap();
+            println!("[debug] Timestamp: {}; MarketID: {}, Progress: {}", &depot_event.timestamp, &depot_event.MarketID, &depot_event.ConstructionProgress);
+            for resource in &depot_event.ResourcesRequired {
+                let remaining_amount = &resource.RequiredAmount - &resource.ProvidedAmount;
+                if remaining_amount > 0 {
+                    println!("[debug] Need {} of {}, paying {} Cr", &remaining_amount, &resource.Name_Localised, &resource.Payment);
+                }
+            }
+            continue;
+        }
+        println!("[debug] Timestamp: {}; Event: {}; Line: {}", entry.timestamp, entry.event, line.as_ref().unwrap());
     }
 }
