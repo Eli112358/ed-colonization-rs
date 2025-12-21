@@ -40,12 +40,10 @@ fn main() {
         let file_name = &copy.file_name().to_str().unwrap().to_string();
         let journal_match = journal_re.is_match(&file_name);
         if !journal_match {
-            println!("Not a journal file: {}", file_name);
             continue;
         }
         journal_files.push(String::from(file_name));
     }
-    for file in journal_files {
-        println!("Journal file: {}", file);
-    }
+    let latest_journal_file = journal_files.pop().unwrap();
+    println!("[debug] Latest Journal file: {}", latest_journal_file);
 }
