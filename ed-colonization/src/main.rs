@@ -3,18 +3,13 @@ use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 use config::Config;
 use regex::Regex;
-use serde::Deserialize;
 use serde_json::from_str;
+use events::JournalEntry;
 
 mod config;
+mod events;
 
 const APP_NAME: &str = "ed-colonization";
-
-#[derive(Debug, Deserialize)]
-struct JournalEntry {
-    timestamp: String,
-    event: String,
-}
 
 fn main() {
     let mut config = Config::new();
