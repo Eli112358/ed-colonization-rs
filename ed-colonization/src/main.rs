@@ -1,4 +1,6 @@
+use std::fs::read_dir;
 use config::Config;
+use regex::Regex;
 
 mod config;
 
@@ -24,4 +26,26 @@ fn main() {
     config.save();
     config.reload();
     println!("[debug] Totals only: {}", config.data.totals_only);
+
+    let paths = read_dir(&journal_location).unwrap();
+
+    let journal_re = Regex::new(r"Journal\.\d{4}-\d{2}-\d{2}T\d{6}\.\d{2}\.log").unwrap();
+    let mut journal_files: Vec<String> = vec![];
+    for path in paths {
+        let copy = path.as_ref().unwrap();
+        let is_file = &copy.path().is_file();
+        if !is_file {
+            continue;
+        }
+        let file_name = &copy.file_name().to_str().unwrap().to_string();
+        let journal_match = journal_re.is_match(&file_name);
+        if !journal_match {
+            println!("Not a journal file: {}", file_name);
+            continue;
+        }
+        journal_files.push(String::from(file_name));
+    }
+    for file in journal_files {
+        println!("Journal file: {}", file);
+    }
 }
